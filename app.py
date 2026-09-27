@@ -4,11 +4,14 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 from flask import Response
+import webbrowser
+import os
+import threading
+from urllib.parse import urljoin
 
 app = Flask(__name__)
 app.secret_key = "secretkey"
 
-# MySQL Connection
 db = mysql.connector.connect(
     host="localhost",
     user="root",
@@ -17,17 +20,11 @@ db = mysql.connector.connect(
 )
 cursor = db.cursor(dictionary=True)
 
-# ==========================
-# Home -> Login
-# ==========================
 @app.route("/")
 def home():
     return render_template("login.html")
 
 
-# ==========================
-# Register
-# ==========================
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -44,9 +41,6 @@ def register():
     return render_template("register.html")
 
 
-# ==========================
-# Login
-# ==========================
 @app.route("/login", methods=["POST"])
 def login():
     email = request.form["email"]
@@ -63,9 +57,6 @@ def login():
         return "Invalid Credentials"
 
 
-# ==========================
-# Dashboard
-# ==========================
 @app.route("/dashboard")
 def dashboard():
     if "user" not in session:
@@ -77,46 +68,61 @@ def dashboard():
     return render_template("dashboard.html", books=books, user=session["user"])
 
 
-# ==========================
-# Run Scraper
-# ==========================
 @app.route("/scrape", methods=["POST"])
 def scrape():
     if "user" not in session:
         return redirect("/")
 
-    limit = int(request.form["limit"])
+    url = request.form.get("url")
+    if not url:
+        return redirect("/dashboard")
+    limit = int(request.form.get("limit", 50))
+    clear = request.form.get("clear")
+    pages_to_scrape = int(request.form.get("pages", 1))
 
-    response = requests.get("http://books.toscrape.com/catalogue/page-1.html")
-    soup = BeautifulSoup(response.text, "html.parser")
-
-    books = soup.find_all("article", class_="product_pod")
+    if clear:
+        cursor.execute("TRUNCATE TABLE books")
+        db.commit()
 
     count = 0
+    current_url = url
 
-    for book in books:
-        if count >= limit:
+    for _ in range(pages_to_scrape):
+        if count >= limit or not current_url:
             break
 
-        title = book.h3.a["title"]
-        price = book.find("p", class_="price_color").text
-        availability = book.find("p", class_="instock availability").text.strip()
-        rating = book.find("p")["class"][1]
+        response = requests.get(current_url)
+        soup = BeautifulSoup(response.text, "html.parser")
 
-        sql = """
-        INSERT INTO books (title, price, rating, availability)
-        VALUES (%s, %s, %s, %s)
-        """
-        cursor.execute(sql, (title, price, rating, availability))
-        count += 1
+        books = soup.find_all("article", class_="product_pod")
+
+        for book in books:
+            if count >= limit:
+                break
+
+            title = book.h3.a["title"]
+            price = book.find("p", class_="price_color").text
+            availability = book.find("p", class_="instock availability").text.strip()
+            rating = book.find("p")["class"][1]
+
+            sql = """
+            INSERT INTO books (title, price, rating, availability)
+            VALUES (%s, %s, %s, %s)
+            """
+            cursor.execute(sql, (title, price, rating, availability))
+            count += 1
+        
+        next_button = soup.find("li", class_="next")
+        if next_button:
+            next_page_url = next_button.a["href"]
+            current_url = urljoin(current_url, next_page_url)
+        else:
+            current_url = None
 
     db.commit()
 
     return redirect("/dashboard")
 
-# ==========================
-# download CSV
-# ==========================
 @app.route("/download")
 def download():
     if "user" not in session:
@@ -135,9 +141,6 @@ def download():
     return Response(generate(),
                     mimetype="text/csv",
                     headers={"Content-Disposition": "attachment;filename=books.csv"})
-# ==========================
-# Logout
-# ==========================
 @app.route("/logout")
 def logout():
     session.pop("user", None)
@@ -145,4 +148,6 @@ def logout():
 
 
 if __name__ == "__main__":
+    if os.environ.get("WERKZEUG_RUN_MAIN") != "true":
+        threading.Timer(1.25, lambda: webbrowser.open("http://127.0.0.1:5000")).start()
     app.run(debug=True)

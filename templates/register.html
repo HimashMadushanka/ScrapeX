@@ -7,16 +7,16 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --bg: #050d07;
-            --surface: #080f0a;
-            --border: #122018;
-            --accent: #22c55e;
-            --accent-glow: rgba(34, 197, 94, 0.18);
-            --accent-glow-strong: rgba(34, 197, 94, 0.35);
-            --text: #d4f0de;
-            --muted: #3d6b4f;
-            --muted2: #1e3828;
-            --input-bg: #060e08;
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --border: #334155;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.18);
+            --accent-glow-strong: rgba(59, 130, 246, 0.35);
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --muted2: #64748b;
+            --input-bg: #0f172a;
         }
 
         body {
@@ -36,8 +36,8 @@
             position: fixed;
             inset: 0;
             background-image:
-                linear-gradient(rgba(34,197,94,0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(34,197,94,0.04) 1px, transparent 1px);
+                linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
             background-size: 40px 40px;
             pointer-events: none;
         }
@@ -47,7 +47,7 @@
             width: 600px; height: 400px;
             top: -200px; left: 50%;
             transform: translateX(-50%);
-            background: radial-gradient(ellipse, rgba(34,197,94,0.1), transparent 70%);
+            background: radial-gradient(ellipse, rgba(59,130,246,0.1), transparent 70%);
             pointer-events: none;
             filter: blur(40px);
             animation: gPulse 7s ease-in-out infinite alternate;
@@ -56,7 +56,7 @@
             position: fixed;
             width: 400px; height: 400px;
             bottom: -200px; right: 5%;
-            background: radial-gradient(ellipse, rgba(20,120,50,0.1), transparent 70%);
+            background: radial-gradient(ellipse, rgba(30,58,138,0.1), transparent 70%);
             pointer-events: none;
             filter: blur(60px);
         }
@@ -74,9 +74,9 @@
             width: 430px;
             max-width: 94vw;
             box-shadow:
-                0 0 0 1px rgba(34,197,94,0.05),
+                0 0 0 1px rgba(59,130,246,0.05),
                 0 40px 100px rgba(0,0,0,0.6),
-                inset 0 1px 0 rgba(34,197,94,0.07);
+                inset 0 1px 0 rgba(59,130,246,0.07);
             animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
             z-index: 1;
         }
@@ -97,23 +97,23 @@
             position: absolute;
             top: 12px; right: 12px;
             width: 8px; height: 8px;
-            border-top: 1px solid rgba(34,197,94,0.4);
-            border-right: 1px solid rgba(34,197,94,0.4);
+            border-top: 1px solid rgba(59,130,246,0.4);
+            border-right: 1px solid rgba(59,130,246,0.4);
         }
         .corner-bl {
             position: absolute;
             bottom: 12px; left: 12px;
             width: 8px; height: 8px;
-            border-bottom: 1px solid rgba(34,197,94,0.4);
-            border-left: 1px solid rgba(34,197,94,0.4);
+            border-bottom: 1px solid rgba(59,130,246,0.4);
+            border-left: 1px solid rgba(59,130,246,0.4);
         }
 
         .badge {
             display: inline-flex;
             align-items: center;
             gap: 7px;
-            background: rgba(34,197,94,0.07);
-            border: 1px solid rgba(34,197,94,0.18);
+            background: rgba(59,130,246,0.07);
+            border: 1px solid rgba(59,130,246,0.18);
             border-radius: 999px;
             padding: 4px 12px;
             font-size: 10px;
@@ -217,9 +217,9 @@
             font-size: 13px;
         }
         input:focus {
-            border-color: rgba(34,197,94,0.45);
-            background: rgba(34,197,94,0.025);
-            box-shadow: 0 0 0 3px var(--accent-glow), 0 0 20px rgba(34,197,94,0.06);
+            border-color: rgba(59,130,246,0.45);
+            background: rgba(59,130,246,0.025);
+            box-shadow: 0 0 0 3px var(--accent-glow), 0 0 20px rgba(59,130,246,0.06);
         }
         .input-wrap:focus-within svg { stroke: var(--accent); }
 
@@ -234,7 +234,7 @@
             background: var(--accent);
             border: none;
             border-radius: 8px;
-            color: #021005;
+            color: #ffffff;
             font-family: 'Space Mono', monospace;
             font-size: 12px;
             font-weight: 700;
@@ -253,7 +253,7 @@
             background: linear-gradient(to bottom, rgba(255,255,255,0.12), transparent);
         }
         button:hover {
-            background: #4ade80;
+            background: #60a5fa;
             box-shadow: 0 0 50px var(--accent-glow-strong), 0 6px 24px rgba(0,0,0,0.5);
             transform: translateY(-2px);
         }
@@ -276,7 +276,7 @@
             transition: color 0.2s, text-shadow 0.2s;
         }
         .footer a:hover {
-            color: #4ade80;
+            color: #60a5fa;
             text-shadow: 0 0 12px var(--accent-glow-strong);
         }
     </style>
@@ -293,7 +293,7 @@
         <p class="tagline">Fill in your details below to get started.</p>
         <div class="divider"></div>
 
-        <form method="POST">
+        <form method="POST" action="/register">
             <div class="field">
                 <label for="username">Username</label>
                 <div class="input-wrap">
